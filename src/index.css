@@ -1,0 +1,233 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================
+   BASE STYLES
+   ============================ */
+@layer base {
+  html {
+    font-family: 'Outfit', system-ui, sans-serif;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-white text-charcoal antialiased;
+  }
+
+  ::selection {
+    @apply bg-emerald/20 text-charcoal-deep;
+  }
+}
+
+/* ============================
+   COMPONENT UTILITIES
+   ============================ */
+@layer components {
+  /* Noise texture overlay */
+  .noise-bg::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0.025;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* Diagonal construction accent lines */
+  .construction-lines::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0.015;
+    background-image: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 30px,
+      #10B981 30px,
+      #10B981 31px
+    );
+    pointer-events: none;
+  }
+
+  /* Hero gradient */
+  .hero-overlay {
+    background: linear-gradient(
+      135deg,
+      rgba(17, 24, 39, 0.93) 0%,
+      rgba(31, 41, 55, 0.72) 50%,
+      rgba(31, 41, 55, 0.5) 100%
+    );
+  }
+
+  /* Hover lift effect */
+  .hover-lift {
+    @apply transition-all duration-300;
+  }
+  .hover-lift:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Quote decorative mark */
+  .quote-mark::before {
+    content: '\201C';
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 4rem;
+    line-height: 1;
+    color: #10B981;
+    opacity: 0.2;
+    position: absolute;
+    top: -8px;
+    left: 12px;
+  }
+
+  /* CTA pulse animation */
+  .cta-pulse {
+    animation: subtle-pulse 2.5s infinite;
+  }
+
+  /* Star rating color */
+  .stars {
+    color: #10B981;
+    letter-spacing: 2px;
+  }
+}
+
+/* ============================
+   ANIMATIONS
+   ============================ */
+@keyframes subtle-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Scroll reveal classes */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+.reveal-delay-4 { transition-delay: 0.4s; }
+.reveal-delay-5 { transition-delay: 0.5s; }
+
+/* ============================
+   FORM FOCUS STATES
+   ============================ */
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: #10B981 !important;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+}
+
+/* ============================
+   MOBILE MENU
+   ============================ */
+.mobile-menu {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease-out;
+}
+.mobile-menu.open {
+  max-height: 500px;
+}
+
+/* ============================
+   FLOATING CALL BUTTON
+   ============================ */
+.float-call {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 900;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: #10B981;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 24px rgba(16, 185, 129, 0.45);
+  animation: subtle-pulse 2.5s infinite;
+  transition: transform 0.2s;
+}
+.float-call:hover {
+  transform: scale(1.1);
+}
+@media (min-width: 768px) {
+  .float-call { display: none; }
+}
+
+/* ============================
+   GALLERY GRID
+   ============================ */
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+@media (max-width: 640px) {
+  .gallery-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============================
+   SCROLLBAR CUSTOM
+   ============================ */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #F8F1E3;
+}
+::-webkit-scrollbar-thumb {
+  background: #D1D5DB;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #9CA3AF;
+}
