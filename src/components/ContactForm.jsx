@@ -1,11 +1,17 @@
 import { useState } from 'react'
+import emailjs from '@emailjs/browser'
 import { CheckCircle, Phone } from 'lucide-react'
 import { RevealDiv } from '../lib/useScrollReveal'
 import { COMPANY } from '../lib/constants'
 import { saveContactLead } from '../lib/supabase'
 
+const EMAILJS_SERVICE_ID  = import.meta.env.VITE_EMAILJS_SERVICE_ID
+const EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID
+const EMAILJS_PUBLIC_KEY  = import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+
 export default function ContactForm() {
   const [submitted, setSubmitted] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
   const [form, setForm] = useState({
     name: '',
     phone: '',
@@ -26,7 +32,29 @@ export default function ContactForm() {
       setPhoneError(true)
       return
     }
+
+    setSubmitting(true)
+
+    // Save to Supabase for record-keeping
     await saveContactLead(form)
+
+    // Send email notification to contractor
+    if (EMAILJS_SERVICE_ID && EMAILJS_TEMPLATE_ID && EMAILJS_PUBLIC_KEY) {
+      await emailjs.send(
+        EMAILJS_SERVICE_ID,
+        EMAILJS_TEMPLATE_ID,
+        {
+          from_name:    form.name || 'Not provided',
+          phone:        form.phone,
+          from_email:   form.email || 'Not provided',
+          project_type: form.projectType || 'Not specified',
+          message:      form.message || 'No message',
+        },
+        EMAILJS_PUBLIC_KEY
+      )
+    }
+
+    setSubmitting(false)
     setSubmitted(true)
   }
 
@@ -173,9 +201,17 @@ export default function ContactForm() {
 
                   <button
                     type="submit"
-                    className="w-full bg-emerald hover:bg-emerald-dark text-white font-bold text-lg py-4 rounded-xl transition-colors cta-pulse"
+                    disabled={submitting}
+                    className="w-full bg-emerald hover:bg-emerald-dark disabled:bg-emerald/70 disabled:cursor-not-allowed text-white font-bold text-lg py-4 rounded-xl transition-colors cta-pulse flex items-center justify-center gap-2"
                   >
-                    Get My Free Quote →
+                    {submitting ? (
+                      <>
+                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        Sending...
+                      </>
+                    ) : (
+                      'Get My Free Quote →'
+                    )}
                   </button>
                   <p className="text-xs text-gray-400 text-center">
                     No spam. No obligation. Anton calls you directly.
