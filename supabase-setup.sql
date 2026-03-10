@@ -78,29 +78,23 @@ CREATE POLICY "Authenticated users can read contact leads"
 --
 -- Then run these storage policies:
 
--- Allow authenticated users to upload images
-INSERT INTO storage.policies (name, bucket_id, definition)
-VALUES (
-  'Authenticated users can upload portfolio images',
-  'portfolio',
-  '{"operation": "INSERT", "role": "authenticated"}'
-);
+CREATE POLICY "Authenticated users can upload portfolio images"
+  ON storage.objects
+  FOR INSERT
+  TO authenticated
+  WITH CHECK (bucket_id = 'portfolio');
 
--- Allow public to view images
-INSERT INTO storage.policies (name, bucket_id, definition)
-VALUES (
-  'Public can view portfolio images',
-  'portfolio',
-  '{"operation": "SELECT", "role": "anon"}'
-);
+CREATE POLICY "Public can view portfolio images"
+  ON storage.objects
+  FOR SELECT
+  TO anon
+  USING (bucket_id = 'portfolio');
 
--- Allow authenticated users to delete images
-INSERT INTO storage.policies (name, bucket_id, definition)
-VALUES (
-  'Authenticated users can delete portfolio images',
-  'portfolio',
-  '{"operation": "DELETE", "role": "authenticated"}'
-);
+CREATE POLICY "Authenticated users can delete portfolio images"
+  ON storage.objects
+  FOR DELETE
+  TO authenticated
+  USING (bucket_id = 'portfolio');
 
 -- ======================================
 -- ADMIN USER SETUP
