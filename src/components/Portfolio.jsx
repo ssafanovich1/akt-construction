@@ -7,6 +7,7 @@ import { DEFAULT_PORTFOLIO } from '../lib/constants'
 export default function Portfolio() {
   const [images, setImages] = useState([])
   const [loading, setLoading] = useState(true)
+  const [failedImages, setFailedImages] = useState(new Set())
 
   useEffect(() => {
     loadImages()
@@ -58,17 +59,19 @@ export default function Portfolio() {
                 key={`${img.url}-${i}`}
                 className="group relative rounded-xl overflow-hidden bg-charcoal-light aspect-[4/3]"
               >
-                <img
-                  src={img.url}
-                  alt={img.caption || 'AKT Construction project'}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  loading="lazy"
-                  onError={(e) => {
-                    e.target.style.display = 'none'
-                    e.target.parentElement.innerHTML =
-                      '<div class="flex items-center justify-center h-full text-gray-500 text-sm">Image unavailable</div>'
-                  }}
-                />
+                {failedImages.has(`${img.url}-${i}`) ? (
+                  <div className="flex items-center justify-center h-full text-gray-500 text-sm">
+                    Image unavailable
+                  </div>
+                ) : (
+                  <img
+                    src={img.url}
+                    alt={img.caption || 'AKT Construction project'}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    loading="lazy"
+                    onError={() => setFailedImages(prev => new Set([...prev, `${img.url}-${i}`]))}
+                  />
+                )}
                 <div className="absolute inset-0 bg-gradient-to-t from-charcoal-deep/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   <div className="absolute bottom-0 left-0 right-0 p-5">
                     <span className="text-emerald text-xs font-semibold uppercase tracking-wider">

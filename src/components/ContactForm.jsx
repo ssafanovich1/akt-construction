@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { CheckCircle, Phone } from 'lucide-react'
 import { RevealDiv } from '../lib/useScrollReveal'
 import { COMPANY } from '../lib/constants'
+import { saveContactLead } from '../lib/supabase'
 
 export default function ContactForm() {
   const [submitted, setSubmitted] = useState(false)
@@ -19,14 +20,13 @@ export default function ContactForm() {
     if (e.target.name === 'phone') setPhoneError(false)
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault()
     if (!form.phone.trim()) {
       setPhoneError(true)
       return
     }
-    // In production, you'd send this to Supabase, email service, etc.
-    console.log('Quote request submitted:', form)
+    await saveContactLead(form)
     setSubmitted(true)
   }
 

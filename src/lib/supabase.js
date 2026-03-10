@@ -3,18 +3,36 @@ import { createClient } from '@supabase/supabase-js'
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 
-// Create Supabase client - will be null if env vars not configured
 export const supabase = (supabaseUrl && supabaseAnonKey)
   ? createClient(supabaseUrl, supabaseAnonKey)
   : null
 
 // ============================
+// AUTH
+// ============================
+
+export async function signInAdmin(email, password) {
+  if (!supabase) throw new Error('Supabase not configured')
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+  if (error) throw error
+  return data
+}
+
+export async function signOutAdmin() {
+  if (!supabase) return
+  await supabase.auth.signOut()
+}
+
+export async function getAdminSession() {
+  if (!supabase) return null
+  const { data: { session } } = await supabase.auth.getSession()
+  return session
+}
+
+// ============================
 // PORTFOLIO IMAGE OPERATIONS
 // ============================
 
-/**
- * Fetch all portfolio images, ordered newest first
- */
 export async function getPortfolioImages() {
   if (!supabase) return []
 
@@ -23,16 +41,10 @@ export async function getPortfolioImages() {
     .select('*')
     .order('created_at', { ascending: false })
 
-  if (error) {
-    console.error('Error fetching portfolio images:', error)
-    return []
-  }
+  if (error) return []
   return data || []
 }
 
-/**
- * Add a new portfolio image
- */
 export async function addPortfolioImage({ url, caption, project_type }) {
   if (!supabase) throw new Error('Supabase not configured')
 
@@ -46,9 +58,6 @@ export async function addPortfolioImage({ url, caption, project_type }) {
   return data
 }
 
-/**
- * Delete a portfolio image by ID
- */
 export async function deletePortfolioImage(id) {
   if (!supabase) throw new Error('Supabase not configured')
 
@@ -60,32 +69,26 @@ export async function deletePortfolioImage(id) {
   if (error) throw error
 }
 
-/**
- * Delete all portfolio images
- */
 export async function clearAllPortfolioImages() {
   if (!supabase) throw new Error('Supabase not configured')
 
   const { error } = await supabase
     .from('portfolio_images')
     .delete()
-    .neq('id', 0) // delete all rows
+    .neq('id', 0)
 
   if (error) throw error
 }
 
-/**
- * Upload an image file to Supabase Storage bucket "portfolio"
- */
 export async function uploadPortfolioFile(file) {
   if (!supabase) throw new Error('Supabase not configured')
 
-  const fileExt = file.name.split('.').pop()
-  const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${fileExt}`
+  const ext = file.name.split('.').pop().toLowerCase()
+  const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
 
   const { data, error } = await supabase.storage
     .from('portfolio')
-    .upload(fileName, file)
+    .upload(fileName, file, { contentType: file.type })
 
   if (error) throw error
 
@@ -94,4 +97,15 @@ export async function uploadPortfolioFile(file) {
     .getPublicUrl(data.path)
 
   return urlData.publicUrl
+}
+
+// ============================
+// CONTACT LEADS
+// ============================
+
+export async function saveContactLead({ name, phone, email, projectType, message }) {
+  if (!supabase) return
+  await supabase
+    .from('contact_leads')
+    .insert([{ name, phone, email, project_type: projectType, message }])
 }

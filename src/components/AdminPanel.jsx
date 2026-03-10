@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Lock, X, Trash2, ExternalLink, Plus, AlertCircle, Image } from 'lucide-react'
+import { Lock, X, Trash2, ExternalLink, Plus, AlertCircle, Image, LogOut } from 'lucide-react'
 import {
   supabase,
   getPortfolioImages,
@@ -7,40 +7,52 @@ import {
   deletePortfolioImage,
   clearAllPortfolioImages,
   uploadPortfolioFile,
+  signInAdmin,
+  signOutAdmin,
+  getAdminSession,
 } from '../lib/supabase'
 import { PROJECT_TYPES, DEFAULT_PORTFOLIO } from '../lib/constants'
 
-// Admin password — hardcoded: AKT2026
-const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD || 'AKT2026'
+const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
+const MAX_FILE_SIZE_MB = 10
 
 export default function AdminPanel({ isOpen, onClose }) {
   const [authenticated, setAuthenticated] = useState(false)
+  const [authLoading, setAuthLoading] = useState(true)
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [images, setImages] = useState([])
   const [loading, setLoading] = useState(false)
   const [uploading, setUploading] = useState(false)
   const [successMsg, setSuccessMsg] = useState('')
-  const [supabaseReady, setSupabaseReady] = useState(!!supabase)
 
   // Form fields
   const [imgUrl, setImgUrl] = useState('')
   const [imgCaption, setImgCaption] = useState('')
   const [imgType, setImgType] = useState(PROJECT_TYPES[0])
   const [imgFile, setImgFile] = useState(null)
-  const [uploadMode, setUploadMode] = useState('url') // 'url' or 'file'
+  const [uploadMode, setUploadMode] = useState('url')
+
+  // Check for existing Supabase Auth session on mount
+  useEffect(() => {
+    async function checkSession() {
+      const session = await getAdminSession()
+      setAuthenticated(!!session)
+      setAuthLoading(false)
+    }
+    checkSession()
+  }, [])
 
   useEffect(() => {
     if (authenticated && isOpen) loadImages()
   }, [authenticated, isOpen])
 
-  // Lock body scroll when open
   useEffect(() => {
     document.body.style.overflow = isOpen ? 'hidden' : ''
     return () => { document.body.style.overflow = '' }
   }, [isOpen])
 
-  // Escape to close
   useEffect(() => {
     const handler = (e) => { if (e.key === 'Escape') onClose() }
     window.addEventListener('keydown', handler)
@@ -54,14 +66,26 @@ export default function AdminPanel({ isOpen, onClose }) {
     setLoading(false)
   }
 
-  function handleLogin() {
-    if (password === ADMIN_PASSWORD) {
+  async function handleLogin(e) {
+    e.preventDefault()
+    setError('')
+    setAuthLoading(true)
+    try {
+      await signInAdmin(email, password)
       setAuthenticated(true)
-      setError('')
-    } else {
-      setError('Incorrect password.')
-      setTimeout(() => setError(''), 3000)
+      setPassword('')
+    } catch {
+      setError('Invalid email or password.')
+      setTimeout(() => setError(''), 4000)
     }
+    setAuthLoading(false)
+  }
+
+  async function handleLogout() {
+    await signOutAdmin()
+    setAuthenticated(false)
+    setImages([])
+    onClose()
   }
 
   async function handleAddImage(e) {
@@ -71,8 +95,17 @@ export default function AdminPanel({ isOpen, onClose }) {
     try {
       let finalUrl = imgUrl
 
-      // If file upload mode, upload file to Supabase Storage
       if (uploadMode === 'file' && imgFile) {
+        if (!ALLOWED_MIME_TYPES.includes(imgFile.type)) {
+          setError('Only JPEG, PNG, WebP, and GIF files are allowed.')
+          setUploading(false)
+          return
+        }
+        if (imgFile.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
+          setError(`File size must be under ${MAX_FILE_SIZE_MB} MB.`)
+          setUploading(false)
+          return
+        }
         finalUrl = await uploadPortfolioFile(imgFile)
       }
 
@@ -82,9 +115,20 @@ export default function AdminPanel({ isOpen, onClose }) {
         return
       }
 
+      if (uploadMode === 'url') {
+        try {
+          const parsed = new URL(finalUrl)
+          if (!['http:', 'https:'].includes(parsed.protocol)) throw new Error()
+        } catch {
+          setError('Please enter a valid https:// image URL.')
+          setUploading(false)
+          return
+        }
+      }
+
       await addPortfolioImage({
         url: finalUrl,
-        caption: imgCaption,
+        caption: imgCaption.trim().slice(0, 200),
         project_type: imgType,
       })
 
@@ -95,8 +139,8 @@ export default function AdminPanel({ isOpen, onClose }) {
       showSuccess('Image added successfully!')
       await loadImages()
       window.dispatchEvent(new Event('portfolio-updated'))
-    } catch (err) {
-      setError(err.message || 'Failed to add image.')
+    } catch {
+      setError('Failed to add image. Make sure you are signed in.')
       setTimeout(() => setError(''), 4000)
     }
     setUploading(false)
@@ -107,8 +151,8 @@ export default function AdminPanel({ isOpen, onClose }) {
       await deletePortfolioImage(id)
       await loadImages()
       window.dispatchEvent(new Event('portfolio-updated'))
-    } catch (err) {
-      setError(err.message || 'Failed to delete image.')
+    } catch {
+      setError('Failed to delete image.')
     }
   }
 
@@ -119,8 +163,8 @@ export default function AdminPanel({ isOpen, onClose }) {
       await loadImages()
       window.dispatchEvent(new Event('portfolio-updated'))
       showSuccess('All custom images cleared.')
-    } catch (err) {
-      setError(err.message || 'Failed to clear images.')
+    } catch {
+      setError('Failed to clear images.')
     }
   }
 
@@ -137,10 +181,17 @@ export default function AdminPanel({ isOpen, onClose }) {
       onClick={(e) => { if (e.target === e.currentTarget) onClose() }}
     >
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto my-8">
-        {/* ========================
-            LOGIN SCREEN
-            ======================== */}
-        {!authenticated ? (
+
+        {/* Loading session check */}
+        {authLoading ? (
+          <div className="p-8 flex items-center justify-center min-h-[200px]">
+            <div className="w-8 h-8 border-4 border-emerald/30 border-t-emerald rounded-full animate-spin" />
+          </div>
+
+        /* ========================
+           LOGIN SCREEN
+           ======================== */
+        ) : !authenticated ? (
           <div className="p-8 md:p-10">
             <div className="text-center mb-8">
               <div className="w-14 h-14 bg-charcoal-deep rounded-xl flex items-center justify-center mx-auto mb-4">
@@ -148,27 +199,37 @@ export default function AdminPanel({ isOpen, onClose }) {
               </div>
               <h3 className="font-display text-2xl text-charcoal">Portfolio Admin</h3>
               <p className="text-gray-500 text-sm mt-1">
-                Enter your password to manage portfolio images
+                Sign in to manage portfolio images
               </p>
             </div>
 
-            <div className="max-w-xs mx-auto space-y-4">
+            <form onSubmit={handleLogin} className="max-w-xs mx-auto space-y-4">
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Email"
+                required
+                className="w-full px-4 py-3 rounded-lg border border-gray-200 text-charcoal text-sm"
+                autoFocus
+              />
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
                 placeholder="Password"
+                required
                 className="w-full px-4 py-3 rounded-lg border border-gray-200 text-charcoal text-sm text-center"
-                autoFocus
               />
               <button
-                onClick={handleLogin}
+                type="submit"
+                disabled={authLoading}
                 className="w-full bg-charcoal-deep hover:bg-charcoal-light text-white font-bold py-3 rounded-lg transition-colors"
               >
-                Log In
+                Sign In
               </button>
               <button
+                type="button"
                 onClick={onClose}
                 className="w-full text-gray-500 hover:text-gray-700 text-sm py-2 transition-colors"
               >
@@ -177,8 +238,9 @@ export default function AdminPanel({ isOpen, onClose }) {
               {error && (
                 <p className="text-red-500 text-sm text-center">{error}</p>
               )}
-            </div>
+            </form>
           </div>
+
         ) : (
           /* ========================
              ADMIN DASHBOARD
@@ -187,25 +249,32 @@ export default function AdminPanel({ isOpen, onClose }) {
             {/* Header */}
             <div className="flex items-center justify-between mb-8">
               <h3 className="font-display text-2xl text-charcoal">Manage Portfolio</h3>
-              <button
-                onClick={onClose}
-                className="text-gray-400 hover:text-gray-600 transition-colors"
-              >
-                <X className="w-6 h-6" />
-              </button>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center gap-1.5 text-gray-400 hover:text-red-500 transition-colors text-sm"
+                >
+                  <LogOut className="w-4 h-4" />
+                  Sign Out
+                </button>
+                <button
+                  onClick={onClose}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
             </div>
 
             {/* Supabase connection warning */}
-            {!supabaseReady && (
+            {!supabase && (
               <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6 flex items-start gap-3">
                 <AlertCircle className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
                 <div className="text-sm">
                   <p className="font-semibold text-amber-800">Supabase Not Connected</p>
                   <p className="text-amber-700 mt-1">
                     Set <code className="bg-amber-100 px-1 rounded text-xs">VITE_SUPABASE_URL</code> and{' '}
-                    <code className="bg-amber-100 px-1 rounded text-xs">VITE_SUPABASE_ANON_KEY</code> in your{' '}
-                    <code className="bg-amber-100 px-1 rounded text-xs">.env</code> file. See{' '}
-                    <code className="bg-amber-100 px-1 rounded text-xs">.env.example</code> for reference.
+                    <code className="bg-amber-100 px-1 rounded text-xs">VITE_SUPABASE_ANON_KEY</code> in your environment variables.
                   </p>
                 </div>
               </div>
@@ -218,7 +287,6 @@ export default function AdminPanel({ isOpen, onClose }) {
                 Add New Image
               </h4>
 
-              {/* Upload mode toggle */}
               <div className="flex gap-2 mb-4">
                 <button
                   onClick={() => setUploadMode('url')}
@@ -261,23 +329,17 @@ export default function AdminPanel({ isOpen, onClose }) {
                     <label className="block text-sm font-semibold text-charcoal mb-1">
                       Upload Image <span className="text-emerald">*</span>
                     </label>
-                    <div className="flex items-center gap-3">
-                      <label className="flex items-center gap-2 px-4 py-3 rounded-lg border border-gray-200 bg-white cursor-pointer hover:bg-gray-50 transition-colors text-sm text-gray-600 flex-1">
-                        <Image className="w-4 h-4" />
-                        {imgFile ? imgFile.name : 'Choose file...'}
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={(e) => setImgFile(e.target.files?.[0] || null)}
-                          className="hidden"
-                        />
-                      </label>
-                    </div>
-                    {!supabaseReady && (
-                      <p className="text-amber-600 text-xs mt-1">
-                        File upload requires Supabase connection. Use URL mode instead.
-                      </p>
-                    )}
+                    <label className="flex items-center gap-2 px-4 py-3 rounded-lg border border-gray-200 bg-white cursor-pointer hover:bg-gray-50 transition-colors text-sm text-gray-600">
+                      <Image className="w-4 h-4" />
+                      {imgFile ? imgFile.name : 'Choose file...'}
+                      <input
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp,image/gif"
+                        onChange={(e) => setImgFile(e.target.files?.[0] || null)}
+                        className="hidden"
+                      />
+                    </label>
+                    <p className="text-gray-400 text-xs mt-1">JPEG, PNG, WebP or GIF · max {MAX_FILE_SIZE_MB} MB</p>
                   </div>
                 )}
 
@@ -288,6 +350,7 @@ export default function AdminPanel({ isOpen, onClose }) {
                     value={imgCaption}
                     onChange={(e) => setImgCaption(e.target.value)}
                     placeholder="e.g. Kitchen remodel in West Hollywood"
+                    maxLength={200}
                     className="w-full px-4 py-3 rounded-lg border border-gray-200 text-charcoal text-sm"
                   />
                 </div>
@@ -309,7 +372,7 @@ export default function AdminPanel({ isOpen, onClose }) {
 
                 <button
                   type="submit"
-                  disabled={uploading || !supabaseReady}
+                  disabled={uploading || !supabase}
                   className="w-full bg-emerald hover:bg-emerald-dark disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold py-3 rounded-lg transition-colors flex items-center justify-center gap-2"
                 >
                   {uploading ? (
@@ -375,7 +438,9 @@ export default function AdminPanel({ isOpen, onClose }) {
                         src={img.url}
                         alt=""
                         className="w-16 h-12 object-cover rounded-md flex-shrink-0 bg-gray-200"
-                        onError={(e) => { e.target.src = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 48%22%3E%3Crect fill=%22%23ddd%22 width=%2264%22 height=%2248%22/%3E%3Ctext x=%2232%22 y=%2228%22 text-anchor=%22middle%22 fill=%22%23999%22 font-size=%2210%22%3EErr%3C/text%3E%3C/svg%3E' }}
+                        onError={(e) => {
+                          e.target.src = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 48%22%3E%3Crect fill=%22%23ddd%22 width=%2264%22 height=%2248%22/%3E%3Ctext x=%2232%22 y=%2228%22 text-anchor=%22middle%22 fill=%22%23999%22 font-size=%2210%22%3EErr%3C/text%3E%3C/svg%3E'
+                        }}
                       />
                       <div className="flex-1 min-w-0">
                         <p className="text-charcoal text-sm font-semibold truncate">
