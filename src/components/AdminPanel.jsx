@@ -273,8 +273,8 @@ export default function AdminPanel({ isOpen, onClose }) {
                 <div className="text-sm">
                   <p className="font-semibold text-amber-800">Supabase Not Connected</p>
                   <p className="text-amber-700 mt-1">
-                    Set <code className="bg-amber-100 px-1 rounded text-xs">VITE_SUPABASE_URL</code> and{' '}
-                    <code className="bg-amber-100 px-1 rounded text-xs">VITE_SUPABASE_ANON_KEY</code> in your environment variables.
+                    Set <code className="bg-amber-100 px-1 rounded text-xs">NEXT_PUBLIC_SUPABASE_URL</code> and{' '}
+                    <code className="bg-amber-100 px-1 rounded text-xs">NEXT_PUBLIC_SUPABASE_ANON_KEY</code> in your environment variables.
                   </p>
                 </div>
               </div>
