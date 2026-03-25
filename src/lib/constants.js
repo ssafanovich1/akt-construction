@@ -12,34 +12,75 @@ export const COMPANY = {
 export const SERVICES = [
   {
     title: 'Kitchen Remodeling',
-    description: 'Complete kitchen transformations — custom cabinets, countertops, islands, backsplash, appliance install, and plumbing upgrades.',
+    description: 'We gut and rebuild kitchens for homeowners who cook, entertain, and actually use the space. Custom cabinetry built to spec, not pulled from a catalog. Stone countertops sourced and fabricated for the specific layout. Appliance integration planned around how you actually cook, not just what fits. We handle the full job — demo, structural, plumbing, electrical, finishes — so you deal with one team, not five subcontractors who don\'t talk to each other.',
     icon: 'ChefHat',
   },
   {
     title: 'Bathroom Remodeling',
-    description: 'Showers, tubs, vanities, tile work, fixtures, and full layout redesign. From dated to modern in weeks.',
+    description: 'Heated floors, frameless glass, freestanding tubs, custom vanities built to your dimensions. We work in tight spaces without cutting corners on materials or finish quality. Every tile layout is planned before a single piece gets set. Fixtures are specced and sourced early so nothing holds up the schedule. Whether it\'s a primary suite overhaul or a guest bath refresh, the result looks intentional, not decorated.',
     icon: 'Bath',
   },
   {
-    title: 'Full Home & Condo Gut Remodels',
-    description: 'Down-to-the-studs renovation. We manage every trade, every permit, and every detail from demo to move-in.',
+    title: 'Home Additions',
+    description: 'When you need more space, the new construction should look like it was always there. We build additions — guest suites, offices, entertainment rooms, second stories — that match the existing structure in materials, proportions, and finish quality. Our team handles architectural coordination, permitting, structural engineering, and construction. The goal is a bigger home, not a home that looks like something got bolted on.',
+    icon: 'Home',
+  },
+  {
+    title: 'Accessory Dwelling Units',
+    description: 'ADUs are the most in-demand build in LA right now — guest houses, rental units, home offices, staff quarters. We build them from the ground up, permitted and to code, with the same materials and finish standard as the main house. Full utility coordination, HVAC, kitchen, bathroom — a complete living space. We handle the city, the inspectors, and the build so you don\'t have to project-manage your own backyard.',
     icon: 'Building2',
   },
   {
-    title: 'Flooring & Painting',
-    description: 'Hardwood, tile, LVP, carpet — plus expert interior and exterior painting that transforms any space.',
-    icon: 'PaintBucket',
+    title: 'Siding Installation',
+    description: 'The outside of your house is what people see first. We install natural wood, fiber cement, and engineered stone siding — systems that hold up to sun, salt air, and time. Proper prep, proper flashing, proper finish. We work with your architect to match existing facades or execute a new look entirely. The install is clean, the lines are tight, and it lasts.',
+    icon: 'Layers',
   },
   {
-    title: 'Custom Door Installation & Interior Work',
-    description: 'Interior doors, French doors, closet systems, trim, molding, and all the detail work that makes a home feel finished.',
+    title: 'Flooring Installation',
+    description: 'Wide-plank hardwood, natural stone, large-format porcelain, custom patterns. We install flooring that takes real skill to get right — the kind where a quarter-inch mistake shows. Subfloor prep is done to tolerance before anything goes down. Transitions between rooms are planned, not improvised. The finished surface is level, tight, and built to take decades of use without showing it.',
+    icon: 'Grid',
+  },
+  {
+    title: 'Window & Door Replacement',
+    description: 'Good windows and doors change how a house feels — the light, the air, the sound, the security. We install steel-frame glass, solid hardwood entries, folding wall systems, and high-performance thermal units from manufacturers who actually stand behind their product. Every opening is measured, framed, and sealed correctly. No callbacks, no drafts, no rattling.',
     icon: 'DoorOpen',
   },
   {
-    title: 'Permitting, HOA & Material Sourcing',
-    description: 'We pull all permits, navigate HOA rules, coordinate with architects, and source every material — saving you time and stress.',
-    icon: 'FileCheck',
+    title: 'Foundation Repair',
+    description: 'Foundation problems don\'t fix themselves, and they get more expensive the longer you wait. We work with licensed structural engineers to assess what\'s actually going on — cracks, settling, water intrusion, seismic risk — and fix the root cause, not the symptom. Underpinning, waterproofing, crack remediation, and retrofit work. Your house sits on this. It matters.',
+    icon: 'Wrench',
   },
+  {
+    title: 'Interior Painting',
+    description: 'A good paint job is 80% prep. We mask properly, patch properly, prime properly, and apply multiple coats with premium paint. The result is a finish that looks clean under any light — no roller marks, no bleed, no missed edges. We work room by room around your schedule and clean up after ourselves. Simple work, done correctly.',
+    icon: 'PaintBucket',
+  },
+  {
+    title: 'Exterior Painting',
+    description: 'LA sun will destroy a cheap paint job in two years. We use professional-grade coatings rated for UV, moisture, and temperature swings. Full surface prep — wash, scrape, prime — before anything gets sprayed or rolled. Color consultation available. The house looks sharp from the street and stays that way.',
+    icon: 'Paintbrush',
+  },
+  {
+    title: 'Plumbing & Electrical',
+    description: 'The work behind the walls has to be as solid as everything in front of them. We handle re-pipes, panel upgrades, new circuits, recessed lighting, smart home wiring, and fixture installation. All work is done by licensed professionals, to code, with permits pulled. We coordinate around finished surfaces so nothing gets torn up unnecessarily.',
+    icon: 'Zap',
+  },
+  {
+    title: 'Garage Conversions',
+    description: 'Turn a garage you park in twice a year into a gym, office, studio, theater, or guest suite. We handle the structural mods, insulation, HVAC, electrical, plumbing if needed, and all interior finishes. Permitted and inspected. The converted space matches the rest of the house in quality, not just function. It\'s real square footage, not a garage with drywall.',
+    icon: 'Car',
+  },
+]
+
+// Service areas
+export const SERVICE_AREAS = [
+  'Beverly Hills', 'West Hollywood', 'Westwood',
+  'Bel Air', 'Hollywood Hills', 'Century City',
+  'Pacific Palisades', 'Studio City', 'Mar Vista',
+  'Brentwood', 'Hancock Park', 'Venice',
+  'Santa Monica', 'Encino', 'Playa Vista',
+  'Malibu', 'Sherman Oaks', 'Culver City',
+  'Holmby Hills', 'Calabasas', 'Los Feliz',
 ]
 
 // Testimonials data — exactly as provided
