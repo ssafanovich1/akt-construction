@@ -1,12 +1,12 @@
 'use client'
 import { Phone, MapPin } from 'lucide-react'
-import { COMPANY } from '../lib/constants'
+import { COMPANY, SERVICE_AREAS } from '../lib/constants'
 
 export default function Footer({ onAdminClick }) {
   return (
     <footer className="bg-charcoal py-14 border-t border-white/5" aria-label="Site footer">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-10">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-10">
           {/* Col 1: Brand */}
           <div>
             <div className="flex items-center gap-2 mb-4">
@@ -94,7 +94,15 @@ export default function Footer({ onAdminClick }) {
           </div>
         </div>
 
-        <div className="border-t border-white/5 mt-10 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
+        {/* Service Areas */}
+        <div className="border-t border-white/5 pt-8 mb-8">
+          <h4 className="text-white font-semibold text-sm mb-4">Areas We Serve</h4>
+          <p className="text-gray-500 text-xs leading-relaxed">
+            {SERVICE_AREAS.join(' · ')}
+          </p>
+        </div>
+
+        <div className="border-t border-white/5 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-gray-600 text-xs">
             © {new Date().getFullYear()} {COMPANY.name}. All rights reserved.
           </p>

@@ -45,8 +45,8 @@ export default function Hero() {
 
           <RevealDiv delay={2}>
             <p className="text-gray-300 text-lg sm:text-xl md:text-2xl leading-relaxed mb-10 max-w-xl font-light">
-              Kitchen & bathroom remodels, full gut renovations, and expert
-              craftsmanship across Los Angeles and California. One call — no headaches.
+              Kitchen & bathroom remodels, full renovations, additions, and ADUs
+              across Beverly Hills, Bel Air, Pacific Palisades, and the Westside.
             </p>
           </RevealDiv>
 
@@ -80,7 +80,7 @@ export default function Hero() {
             </div>
             <div className="flex items-center gap-2">
               <MapPin className="w-4 h-4 text-emerald" />
-              <span>Serving All of Los Angeles</span>
+              <span>Beverly Hills · Bel Air · Westside LA</span>
             </div>
           </RevealDiv>
         </div>

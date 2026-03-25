@@ -12,62 +12,62 @@ export const COMPANY = {
 export const SERVICES = [
   {
     title: 'Kitchen Remodeling',
-    description: 'We gut and rebuild kitchens for homeowners who cook, entertain, and actually use the space. Custom cabinetry built to spec, not pulled from a catalog. Stone countertops sourced and fabricated for the specific layout. Appliance integration planned around how you actually cook, not just what fits. We handle the full job — demo, structural, plumbing, electrical, finishes — so you deal with one team, not five subcontractors who don\'t talk to each other.',
+    description: 'Custom cabinetry, stone countertops, full appliance integration. We handle demo through final finishes — one team, no hand-offs.',
     icon: 'ChefHat',
   },
   {
     title: 'Bathroom Remodeling',
-    description: 'Heated floors, frameless glass, freestanding tubs, custom vanities built to your dimensions. We work in tight spaces without cutting corners on materials or finish quality. Every tile layout is planned before a single piece gets set. Fixtures are specced and sourced early so nothing holds up the schedule. Whether it\'s a primary suite overhaul or a guest bath refresh, the result looks intentional, not decorated.',
+    description: 'Heated floors, frameless glass, freestanding tubs, custom vanities. Tile layouts planned before a single piece is set.',
     icon: 'Bath',
   },
   {
     title: 'Home Additions',
-    description: 'When you need more space, the new construction should look like it was always there. We build additions — guest suites, offices, entertainment rooms, second stories — that match the existing structure in materials, proportions, and finish quality. Our team handles architectural coordination, permitting, structural engineering, and construction. The goal is a bigger home, not a home that looks like something got bolted on.',
+    description: 'Guest suites, offices, entertainment rooms, second stories — built to match the existing structure in materials and finish quality.',
     icon: 'Home',
   },
   {
     title: 'Accessory Dwelling Units',
-    description: 'ADUs are the most in-demand build in LA right now — guest houses, rental units, home offices, staff quarters. We build them from the ground up, permitted and to code, with the same materials and finish standard as the main house. Full utility coordination, HVAC, kitchen, bathroom — a complete living space. We handle the city, the inspectors, and the build so you don\'t have to project-manage your own backyard.',
+    description: 'Permitted ADUs from the ground up: guest houses, rental units, home offices. Full kitchen, bath, HVAC — a complete living space.',
     icon: 'Building2',
   },
   {
     title: 'Siding Installation',
-    description: 'The outside of your house is what people see first. We install natural wood, fiber cement, and engineered stone siding — systems that hold up to sun, salt air, and time. Proper prep, proper flashing, proper finish. We work with your architect to match existing facades or execute a new look entirely. The install is clean, the lines are tight, and it lasts.',
+    description: 'Natural wood, fiber cement, and engineered stone — installed with proper prep, flashing, and finish to last in LA weather.',
     icon: 'Layers',
   },
   {
     title: 'Flooring Installation',
-    description: 'Wide-plank hardwood, natural stone, large-format porcelain, custom patterns. We install flooring that takes real skill to get right — the kind where a quarter-inch mistake shows. Subfloor prep is done to tolerance before anything goes down. Transitions between rooms are planned, not improvised. The finished surface is level, tight, and built to take decades of use without showing it.',
+    description: 'Wide-plank hardwood, natural stone, large-format porcelain. Subfloor prepped to tolerance; transitions planned, not improvised.',
     icon: 'Grid',
   },
   {
     title: 'Window & Door Replacement',
-    description: 'Good windows and doors change how a house feels — the light, the air, the sound, the security. We install steel-frame glass, solid hardwood entries, folding wall systems, and high-performance thermal units from manufacturers who actually stand behind their product. Every opening is measured, framed, and sealed correctly. No callbacks, no drafts, no rattling.',
+    description: 'Steel-frame glass, solid hardwood entries, folding wall systems. Every opening measured, framed, and sealed correctly.',
     icon: 'DoorOpen',
   },
   {
     title: 'Foundation Repair',
-    description: 'Foundation problems don\'t fix themselves, and they get more expensive the longer you wait. We work with licensed structural engineers to assess what\'s actually going on — cracks, settling, water intrusion, seismic risk — and fix the root cause, not the symptom. Underpinning, waterproofing, crack remediation, and retrofit work. Your house sits on this. It matters.',
+    description: 'We work with licensed structural engineers to fix the root cause — underpinning, waterproofing, crack remediation, seismic retrofit.',
     icon: 'Wrench',
   },
   {
     title: 'Interior Painting',
-    description: 'A good paint job is 80% prep. We mask properly, patch properly, prime properly, and apply multiple coats with premium paint. The result is a finish that looks clean under any light — no roller marks, no bleed, no missed edges. We work room by room around your schedule and clean up after ourselves. Simple work, done correctly.',
+    description: 'Proper masking, patching, and priming before a drop of paint goes on. Clean finish under any light, every room.',
     icon: 'PaintBucket',
   },
   {
     title: 'Exterior Painting',
-    description: 'LA sun will destroy a cheap paint job in two years. We use professional-grade coatings rated for UV, moisture, and temperature swings. Full surface prep — wash, scrape, prime — before anything gets sprayed or rolled. Color consultation available. The house looks sharp from the street and stays that way.',
+    description: 'Professional-grade UV and moisture-resistant coatings. Full surface prep — wash, scrape, prime — before anything gets applied.',
     icon: 'Paintbrush',
   },
   {
     title: 'Plumbing & Electrical',
-    description: 'The work behind the walls has to be as solid as everything in front of them. We handle re-pipes, panel upgrades, new circuits, recessed lighting, smart home wiring, and fixture installation. All work is done by licensed professionals, to code, with permits pulled. We coordinate around finished surfaces so nothing gets torn up unnecessarily.',
+    description: 'Re-pipes, panel upgrades, recessed lighting, smart home wiring. Licensed, permitted, and coordinated around finished surfaces.',
     icon: 'Zap',
   },
   {
     title: 'Garage Conversions',
-    description: 'Turn a garage you park in twice a year into a gym, office, studio, theater, or guest suite. We handle the structural mods, insulation, HVAC, electrical, plumbing if needed, and all interior finishes. Permitted and inspected. The converted space matches the rest of the house in quality, not just function. It\'s real square footage, not a garage with drywall.',
+    description: 'Gym, office, studio, or guest suite — permitted and inspected. Matching the rest of the house in quality, not just function.',
     icon: 'Car',
   },
 ]
@@ -120,12 +120,14 @@ export const TESTIMONIALS = [
 
 // Default portfolio images (used when Supabase has none)
 export const DEFAULT_PORTFOLIO = [
-  { url: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=600&q=80', caption: 'Modern Kitchen Remodel', project_type: 'Kitchen Remodel' },
-  { url: 'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?auto=format&fit=crop&w=600&q=80', caption: 'Luxury Bathroom Renovation', project_type: 'Bathroom Remodel' },
-  { url: 'https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=600&q=80', caption: 'Open-Concept Living Space', project_type: 'Full Home Remodel' },
-  { url: 'https://images.unsplash.com/photo-1600566753376-12c8ab7a5a0c?auto=format&fit=crop&w=600&q=80', caption: 'Hardwood Flooring Install', project_type: 'Flooring & Painting' },
-  { url: 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb3?auto=format&fit=crop&w=600&q=80', caption: 'Complete Condo Gut Remodel', project_type: 'Full Home Remodel' },
-  { url: 'https://images.unsplash.com/photo-1600607687644-c7171b42498f?auto=format&fit=crop&w=600&q=80', caption: 'Custom Interior Finishes', project_type: 'Other' },
+  { url: '/images/portfolio-bath-1.jpg', caption: 'Luxury Master Bathroom — Soaking Tub & Glass Shower', project_type: 'Bathroom Remodel' },
+  { url: '/images/portfolio-kitchen-1.jpg', caption: 'Full Kitchen Remodel — White Shaker Cabinets & Quartz', project_type: 'Kitchen Remodel' },
+  { url: '/images/portfolio-bath-2.jpg', caption: 'Double Vanity — LED Mirror & Custom Tile Accent Wall', project_type: 'Bathroom Remodel' },
+  { url: '/images/portfolio-kitchen-2.jpg', caption: 'Kitchen Renovation — White Cabinets, Gas Range & Stainless', project_type: 'Kitchen Remodel' },
+  { url: '/images/portfolio-bath-3.jpg', caption: 'Spa Bathroom — Artistic Tile Wall & Frameless Glass Shower', project_type: 'Bathroom Remodel' },
+  { url: '/images/portfolio-bath-4.jpg', caption: 'Modern Bathroom — Floating Double Vanity & Large Format Tile', project_type: 'Bathroom Remodel' },
+  { url: '/images/portfolio-bath-5.jpg', caption: 'Luxury Bathroom — Large Format Tile & Custom Wood Cabinetry', project_type: 'Bathroom Remodel' },
+  { url: '/images/portfolio-bath-6.jpg', caption: 'Master Bath — Freestanding Soaking Tub & Gold Fixtures', project_type: 'Bathroom Remodel' },
 ]
 
 // Project type options

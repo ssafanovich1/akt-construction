@@ -1,7 +1,6 @@
 import Navbar from '../components/Navbar'
 import Hero from '../components/Hero'
 import Services from '../components/Services'
-import ServiceAreas from '../components/ServiceAreas'
 import WhyAKT from '../components/WhyAKT'
 import Portfolio from '../components/Portfolio'
 import Testimonials from '../components/Testimonials'
@@ -17,8 +16,7 @@ export default function Page() {
       <Navbar />
       <Hero />
       <Services />
-      <ServiceAreas />
-      <WhyAKT />
+<WhyAKT />
       <Portfolio />
       <Testimonials />
       <About />

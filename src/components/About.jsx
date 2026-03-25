@@ -75,8 +75,8 @@ export default function About() {
           {/* Image */}
           <RevealDiv className="order-1 lg:order-2">
             <Image
-              src="https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=800&q=80"
-              alt="Beautiful kitchen remodel by AKT Construction"
+              src="/images/portfolio-bath-1.jpg"
+              alt="Luxury bathroom remodel by AKT Construction in Los Angeles"
               width={800}
               height={800}
               className="rounded-2xl shadow-2xl w-full object-cover aspect-square"

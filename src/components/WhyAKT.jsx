@@ -34,8 +34,8 @@ export default function WhyAKT() {
           {/* Left: Image */}
           <RevealDiv className="relative">
             <img
-              src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=800&q=80"
-              alt="Modern bathroom remodel completed by AKT Construction in Los Angeles"
+              src="/images/portfolio-kitchen-1.jpg"
+              alt="Kitchen remodel completed by AKT Construction in Los Angeles"
               className="rounded-2xl shadow-2xl w-full object-cover aspect-[4/5]"
               loading="lazy"
             />
