@@ -42,83 +42,212 @@ Replace Vite with Next.js 14 to gain SSR (server-side rendering), Next.js Metada
 ### Remove
 - `vite.config.js`
 - `index.html`
+- `src/main.jsx`
 
 ### Add
-- `next.config.js` — minimal config, external image domains
-- `src/app/layout.jsx` — root layout with SEO metadata, fonts, JSON-LD schema
-- `src/app/page.jsx` — replaces `App.jsx` as the single page entry point
+- `next.config.mjs` — minimal config, external image domains (`.mjs` extension required because `package.json` has `"type": "module"`)
+- `src/app/layout.jsx` — root layout with SEO metadata, `next/font`, JSON-LD schema, global CSS import
+- `src/app/page.jsx` — server component; imports all section components
+- `src/components/AdminController.jsx` — thin `"use client"` wrapper holding `adminOpen` state, renders `Footer` + `AdminPanel` (see Server/Client section below)
 
-### Keep (unchanged structure)
-- `src/components/` — all components stay in place
-- `src/lib/` — constants, supabase, useScrollReveal unchanged
-- `tailwind.config.js` — content paths updated to include `./src/app/**`
+### Keep (path unchanged)
+- `src/components/` — all existing components stay in place
+- `src/lib/constants.js`, `src/lib/supabase.js`, `src/lib/useScrollReveal.jsx`
+- `tailwind.config.js` — remove `"./index.html"` from content paths (the existing `"./src/**/*.{js,ts,jsx,tsx}"` already covers `src/app/` — no new path needed); stays in ESM (`export default`) format
 - `postcss.config.js` — unchanged
+
+### Delete build artefacts
+- `dist/` directory — run `git rm -r dist/` to untrack it from git and delete it from disk
+- Add `.next` to `.gitignore` (Next.js build output)
 
 ---
 
 ## Component Strategy: Server vs Client
 
-Next.js App Router defaults to Server Components. Components that use browser APIs, React hooks (`useState`, `useEffect`, `useRef`), or event handlers need `"use client"`.
+### Critical: `"use client"` on `src/lib/useScrollReveal.jsx`
 
-### Needs `"use client"`
-- `useScrollReveal.jsx` — uses `useEffect` + `IntersectionObserver`
-- `Navbar.jsx` — mobile menu state (`useState`)
-- `Hero.jsx` — uses `RevealDiv` from useScrollReveal
-- `Services.jsx` — uses `RevealDiv`
-- `ServiceAreas.jsx` — uses `RevealDiv`
-- `WhyAKT.jsx` — uses `RevealDiv`
-- `Portfolio.jsx` — Supabase fetch, state (`useState`, `useEffect`)
-- `Testimonials.jsx` — uses `RevealDiv`
-- `About.jsx` — uses `RevealDiv`
-- `ContactForm.jsx` — form state, EmailJS submission
-- `FinalCTA.jsx` — uses `RevealDiv`
-- `Footer.jsx` — uses `RevealDiv`
-- `FloatingCallButton.jsx` — scroll listener
-- `AdminPanel.jsx` — Supabase auth, state
+`useScrollReveal.jsx` lives in `src/lib/`, not `src/components/`. It **must** receive the `"use client"` directive at the top of that file. Every component that imports `RevealDiv` from it is transitively marked as a client component.
 
-### Server Component
-- `src/app/page.jsx` — imports all section components, no hooks/state
+### `adminOpen` state — extract a client wrapper
 
----
+`App.jsx` has `useState` managing `adminOpen`, which is passed as props to `Footer` and `AdminPanel`. A Server Component (`page.jsx`) cannot hold state. Solution: create `src/components/AdminController.jsx`:
 
-## SEO Improvements
+```jsx
+'use client'
+import { useState } from 'react'
+import Footer from './Footer'
+import AdminPanel from './AdminPanel'
 
-### Metadata API (`src/app/layout.jsx`)
-Replaces static `<meta>` tags in `index.html`:
-
-```js
-export const metadata = {
-  title: 'AKT Construction | Luxury Construction & Remodeling Los Angeles | Lic #1107017',
-  description: '...',
-  keywords: [...],
-  openGraph: { ... },
+export default function AdminController() {
+  const [adminOpen, setAdminOpen] = useState(false)
+  return (
+    <>
+      <Footer onAdminClick={() => setAdminOpen(true)} />
+      <AdminPanel isOpen={adminOpen} onClose={() => setAdminOpen(false)} />
+    </>
+  )
 }
 ```
 
-### SSR
-Next.js pre-renders the full page HTML on the server. Crawlers receive complete content immediately — not a JS shell that requires execution.
+`page.jsx` renders `<AdminController />` in place of `<Footer>` + `<AdminPanel>`.
 
-### next/image
-Replace all `<img>` tags with `<Image>` from `next/image`:
-- Automatic WebP conversion
-- Lazy loading with `loading="lazy"` by default
-- `priority` prop on Hero image (LCP element)
-- Explicit `width`/`height` to prevent CLS
+### All components needing `"use client"`
+
+Add `'use client'` directive to the top of each of these files:
+
+- `src/lib/useScrollReveal.jsx` — `useEffect` + `IntersectionObserver`
+- `src/components/Navbar.jsx` — mobile menu state + scroll listener (`useEffect` + `window.addEventListener`)
+- `src/components/Hero.jsx` — uses `RevealDiv`
+- `src/components/Services.jsx` — uses `RevealDiv`
+- `src/components/ServiceAreas.jsx` — uses `RevealDiv`
+- `src/components/WhyAKT.jsx` — uses `RevealDiv`
+- `src/components/Portfolio.jsx` — Supabase fetch, `useState`/`useEffect`
+- `src/components/Testimonials.jsx` — uses `RevealDiv`
+- `src/components/About.jsx` — uses `RevealDiv`
+- `src/components/ContactForm.jsx` — form state, EmailJS
+- `src/components/FinalCTA.jsx` — uses `RevealDiv`
+- `src/components/Footer.jsx` — uses `RevealDiv`
+- `src/components/FloatingCallButton.jsx` — uses JSX with event handlers
+- `src/components/AdminPanel.jsx` — Supabase auth, state
+- `src/components/AdminController.jsx` — new wrapper (see above)
+
+### Server Component
+- `src/app/page.jsx` — no hooks/state; imports all section components and `AdminController`
 
 ---
 
-## Environment Variables
+## Environment Variables: `import.meta.env` → `process.env`
 
-`VITE_` prefix → `NEXT_PUBLIC_` prefix. All `.env` keys updated:
+Two changes are required for every env var:
 
-| Old | New |
-|-----|-----|
+1. Rename the key: `VITE_*` → `NEXT_PUBLIC_*` in `.env` and `.env.example`
+2. Update the read syntax in source files: `import.meta.env.VITE_X` → `process.env.NEXT_PUBLIC_X`
+
+`import.meta.env` is Vite-specific. In Next.js it will be `undefined`, silently breaking Supabase and EmailJS.
+
+### Files that must be updated
+
+| File | Variables |
+|------|-----------|
+| `src/lib/supabase.js` | `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` |
+| `src/components/ContactForm.jsx` | `VITE_EMAILJS_SERVICE_ID`, `VITE_EMAILJS_TEMPLATE_ID`, `VITE_EMAILJS_PUBLIC_KEY` |
+| `src/components/AdminPanel.jsx` | UI warning strings at lines 276-277 — replace `VITE_SUPABASE_URL` → `NEXT_PUBLIC_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` → `NEXT_PUBLIC_SUPABASE_ANON_KEY` |
+
+### Key rename table
+
+| Old `.env` key | New `.env` key |
+|----------------|----------------|
 | `VITE_SUPABASE_URL` | `NEXT_PUBLIC_SUPABASE_URL` |
 | `VITE_SUPABASE_ANON_KEY` | `NEXT_PUBLIC_SUPABASE_ANON_KEY` |
 | `VITE_EMAILJS_SERVICE_ID` | `NEXT_PUBLIC_EMAILJS_SERVICE_ID` |
 | `VITE_EMAILJS_TEMPLATE_ID` | `NEXT_PUBLIC_EMAILJS_TEMPLATE_ID` |
 | `VITE_EMAILJS_PUBLIC_KEY` | `NEXT_PUBLIC_EMAILJS_PUBLIC_KEY` |
-| `VITE_ADMIN_PASSWORD` | `NEXT_PUBLIC_ADMIN_PASSWORD` |
+
+Note: `VITE_ADMIN_PASSWORD` does not exist in the codebase (auth uses Supabase `signInWithPassword`) — do not add a `NEXT_PUBLIC_ADMIN_PASSWORD` variable.
+
+---
+
+## `src/app/layout.jsx`
+
+This replaces `index.html`. It must:
+
+1. Import global CSS: `import '../index.css'`
+2. Set up fonts with `next/font/google`
+3. Apply `scroll-smooth` to `<html>` (required for anchor nav links)
+4. Export `metadata` object
+5. Render JSON-LD schema via `<script dangerouslySetInnerHTML>`
+
+### Font setup (`next/font/google`)
+
+```jsx
+import { Playfair_Display, Outfit } from 'next/font/google'
+
+const playfair = Playfair_Display({
+  subsets: ['latin'],
+  variable: '--font-playfair',
+  display: 'swap',
+})
+
+const outfit = Outfit({
+  subsets: ['latin'],
+  variable: '--font-outfit',
+  display: 'swap',
+})
+```
+
+Apply to `<html>`: `className={\`scroll-smooth \${playfair.variable} \${outfit.variable}\`}`
+
+### `tailwind.config.js` font update
+
+Replace the string font names with CSS variable references:
+
+```js
+fontFamily: {
+  display: ['var(--font-playfair)', 'Georgia', 'serif'],
+  body: ['var(--font-outfit)', 'system-ui', 'sans-serif'],
+}
+```
+
+`tailwind.config.js` stays in its current ESM format (`export default { ... }`). Do not convert it to CommonJS.
+
+### `src/index.css` font update
+
+`src/index.css` contains two hardcoded `font-family` string references that must be updated to use the CSS variables — otherwise these rules will silently fall back to Georgia/system-ui once the Google Fonts `<link>` tag in `index.html` is removed:
+
+- Line ~10: `font-family: 'Outfit', system-ui, sans-serif;` → `font-family: var(--font-outfit), system-ui, sans-serif;`
+- Line ~76: `font-family: 'Playfair Display', Georgia, serif;` → `font-family: var(--font-playfair), Georgia, serif;`
+
+### Metadata
+
+```js
+export const metadata = {
+  title: 'AKT Construction | Luxury Construction & Remodeling Los Angeles | Lic #1107017',
+  description: 'Full-service general contractor in Los Angeles — kitchens, bathrooms, additions, ADUs, and full-home renovations in Beverly Hills, Bel Air, Pacific Palisades, Brentwood, Malibu, and across the Westside.',
+  keywords: ['Los Angeles contractor', 'luxury remodeling LA', 'kitchen remodel Beverly Hills', ...],
+  openGraph: {
+    title: 'AKT Construction | Luxury Construction & Remodeling',
+    description: '...',
+    // NOTE: the current index.html canonical uses aktconstruction.com — the PDF branding
+    // document uses aktconstructioncorp.com. Using aktconstructioncorp.com here as the
+    // canonical domain. Verify with client before going live.
+    url: 'https://aktconstructioncorp.com',
+    siteName: 'AKT Construction',
+    // og:image — add a real project photo URL here once photos are available
+    images: [{ url: 'https://aktconstructioncorp.com/og-image.jpg', width: 1200, height: 630 }],
+    locale: 'en_US',
+    type: 'website',
+  },
+}
+```
+
+---
+
+## `next.config.mjs`
+
+Uses `.mjs` extension (or `export default` syntax) because `package.json` has `"type": "module"`.
+
+```js
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  images: {
+    remotePatterns: [
+      { protocol: 'https', hostname: 'images.unsplash.com' },
+      { protocol: 'https', hostname: '*.supabase.co' },
+    ],
+  },
+}
+
+export default nextConfig
+```
+
+---
+
+## `next/image` — Replace `<img>` tags
+
+Replace `<img>` with `<Image>` from `next/image` in all components. Key notes:
+- Hero image: add `priority` prop (it's the LCP element — should not be lazy-loaded)
+- All other images: default lazy loading applies
+- Provide explicit `width` and `height` (or use `fill` with a sized container) to prevent CLS
 
 ---
 
@@ -127,12 +256,13 @@ Replace all `<img>` tags with `<Image>` from `next/image`:
 ### Remove
 - `vite`
 - `@vitejs/plugin-react`
+- `react-router-dom` (unused in the codebase)
 
 ### Add
 - `next`
 
-### Keep
-- `react`, `react-dom` (version stays 18)
+### Keep (unchanged)
+- `react`, `react-dom` (React 18)
 - `@supabase/supabase-js`
 - `@emailjs/browser`
 - `lucide-react`
@@ -150,44 +280,14 @@ Replace all `<img>` tags with `<Image>` from `next/image`:
 
 ---
 
-## next.config.js
+## SEO Improvements Summary
 
-```js
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  images: {
-    remotePatterns: [
-      { protocol: 'https', hostname: 'images.unsplash.com' },
-      { protocol: 'https', hostname: '*.supabase.co' },
-    ],
-  },
-}
-module.exports = nextConfig
-```
-
----
-
-## Tailwind Config Update
-
-Add `./src/app/**/*.{js,jsx}` to the `content` array alongside existing paths.
-
----
-
-## JSON-LD Schema
-
-Move from `index.html` inline script into a `<script type="application/ld+json">` tag rendered inside `src/app/layout.jsx` using `dangerouslySetInnerHTML`.
-
----
-
-## What Does NOT Change
-
-- All component logic and JSX
-- All copy and content (already updated)
-- Supabase schema and integration
-- EmailJS integration
-- Tailwind theme (charcoal/emerald/cream)
-- AdminPanel functionality
-- Fonts (Playfair Display, Outfit via Google Fonts — moved to `next/font`)
+| Area | Vite (before) | Next.js (after) |
+|------|--------------|-----------------|
+| Rendering | Client-side only (empty HTML shell) | SSR — full HTML to crawlers |
+| Metadata | Static tags in `index.html` | Metadata API in `layout.jsx` |
+| Images | `<img>` tags | `next/image` — WebP, size hints, no CLS |
+| Fonts | Render-blocking Google Fonts `<link>` | `next/font` — self-hosted, no layout shift |
 
 ---
 
@@ -195,5 +295,6 @@ Move from `index.html` inline script into a `<script type="application/ld+json">
 
 1. `next build` completes with no errors
 2. `next dev` serves the site identically to the Vite version
-3. `curl` of the root page returns full HTML content (not an empty `<div id="root">`)
-4. All existing functionality works: contact form, portfolio admin, scroll animations
+3. `curl http://localhost:3000` returns complete HTML content (not an empty `<div id="root">`)
+4. All existing functionality works: contact form submissions, portfolio admin panel, scroll animations, anchor navigation
+5. No `import.meta.env` references remain in source files
