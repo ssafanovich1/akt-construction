@@ -1,3 +1,4 @@
+'use client'
 import { Phone, MapPin } from 'lucide-react'
 import { COMPANY } from '../lib/constants'
 

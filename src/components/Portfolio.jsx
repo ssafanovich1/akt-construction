@@ -1,3 +1,4 @@
+'use client'
 import { useState, useEffect } from 'react'
 import { ArrowRight } from 'lucide-react'
 import { RevealDiv } from '../lib/useScrollReveal'

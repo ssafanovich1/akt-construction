@@ -1,3 +1,4 @@
+'use client'
 import { Phone } from 'lucide-react'
 import { RevealDiv } from '../lib/useScrollReveal'
 import { COMPANY } from '../lib/constants'
@@ -11,40 +12,35 @@ export default function About() {
           <div className="order-2 lg:order-1">
             <RevealDiv>
               <span className="text-emerald font-semibold text-sm tracking-widest uppercase">
-                Meet Your Contractor
+                About Us
               </span>
             </RevealDiv>
             <RevealDiv delay={1}>
               <h2 className="font-display text-3xl sm:text-4xl md:text-5xl text-charcoal mt-3 mb-6">
-                Anton Karpenko &amp;
-                <br />
                 AKT Construction
               </h2>
             </RevealDiv>
             <RevealDiv delay={2}>
               <div className="space-y-4 text-gray-600 leading-relaxed">
                 <p>
-                  When you hire AKT Construction, you're not handed off to a project
-                  manager — you work directly with{' '}
-                  <strong className="text-charcoal">Anton Karpenko</strong>, the owner
-                  and lead contractor. Anton believes that honest communication, fair
-                  pricing, and meticulous craftsmanship aren't luxuries — they're the
-                  bare minimum every homeowner deserves.
+                  AKT Construction is a full-service general contractor based in Los Angeles,
+                  serving Beverly Hills, Bel Air, Pacific Palisades, Brentwood, Malibu,
+                  West Hollywood, and communities across the Westside and the Hills.
                 </p>
                 <p>
-                  From a straightforward bathroom refresh to a full condo gut remodel
-                  with architect coordination, HOA navigation, and city permits, Anton
-                  and his team handle it all. No subcontractor runaround, no surprise
-                  invoices, no excuses.
+                  We build and remodel high-end residential properties. Kitchens, bathrooms,
+                  full-home renovations, additions, ADUs, structural work — whatever the scope,
+                  our team handles it from permit to punch list. We work with your architect and
+                  designer or bring our own. Either way, we keep the project on schedule, on
+                  budget, and built right.
                 </p>
                 <p>
-                  AKT Construction is{' '}
+                  Our clients hire us because we show up, communicate clearly, and deliver
+                  finished work they don't have to second-guess. That reputation is earned one
+                  project at a time.{' '}
                   <strong className="text-charcoal">
-                    California Licensed & Insured ({COMPANY.license})
-                  </strong>{' '}
-                  and proudly serves homeowners across the greater Los Angeles area.
-                  Every project is treated like it's Anton's own home — because your
-                  trust is worth more than any single job.
+                    California Contractor's License {COMPANY.license}.
+                  </strong>
                 </p>
               </div>
             </RevealDiv>

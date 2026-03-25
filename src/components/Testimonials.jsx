@@ -1,3 +1,4 @@
+'use client'
 import { ArrowRight } from 'lucide-react'
 import { RevealDiv } from '../lib/useScrollReveal'
 import { TESTIMONIALS } from '../lib/constants'

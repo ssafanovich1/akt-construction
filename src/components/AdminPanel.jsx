@@ -1,3 +1,4 @@
+'use client'
 import { useState, useEffect } from 'react'
 import { Lock, X, Trash2, ExternalLink, Plus, AlertCircle, Image, LogOut } from 'lucide-react'
 import {

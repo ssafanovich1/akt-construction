@@ -1,3 +1,4 @@
+'use client'
 import { useState, useEffect } from 'react'
 import { Phone, Menu, X } from 'lucide-react'
 import { COMPANY } from '../lib/constants'

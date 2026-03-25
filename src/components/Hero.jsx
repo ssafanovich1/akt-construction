@@ -1,3 +1,4 @@
+'use client'
 import { Phone, ChevronDown, MapPin, ShieldCheck, ArrowDown } from 'lucide-react'
 import { RevealDiv } from '../lib/useScrollReveal'
 import { COMPANY } from '../lib/constants'
@@ -34,9 +35,9 @@ export default function Hero() {
 
           <RevealDiv delay={1}>
             <h1 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-white leading-[1.1] mb-6">
-              LA Home Remodeling
+              Luxury Construction &amp; Remodeling
               <br />
-              <span className="text-emerald italic">Done Right.</span>
+              <span className="text-emerald italic">Across Los Angeles</span>
             </h1>
           </RevealDiv>
 

@@ -1,11 +1,14 @@
+'use client'
 import {
-  ChefHat, Bath, Building2, PaintBucket, DoorOpen, FileCheck, ArrowRight
+  ChefHat, Bath, Building2, PaintBucket, DoorOpen, ArrowRight,
+  Home, Layers, Grid, Wrench, Paintbrush, Zap, Car,
 } from 'lucide-react'
 import { RevealDiv } from '../lib/useScrollReveal'
 import { SERVICES } from '../lib/constants'
 
 const iconMap = {
-  ChefHat, Bath, Building2, PaintBucket, DoorOpen, FileCheck,
+  ChefHat, Bath, Building2, PaintBucket, DoorOpen,
+  Home, Layers, Grid, Wrench, Paintbrush, Zap, Car,
 }
 
 export default function Services() {
