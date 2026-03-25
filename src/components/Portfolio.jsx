@@ -4,6 +4,7 @@ import { ArrowRight } from 'lucide-react'
 import { RevealDiv } from '../lib/useScrollReveal'
 import { getPortfolioImages } from '../lib/supabase'
 import { DEFAULT_PORTFOLIO } from '../lib/constants'
+import Image from 'next/image'
 
 export default function Portfolio() {
   const [images, setImages] = useState([])
@@ -65,11 +66,11 @@ export default function Portfolio() {
                     Image unavailable
                   </div>
                 ) : (
-                  <img
+                  <Image
                     src={img.url}
                     alt={img.caption || 'AKT Construction project'}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    loading="lazy"
+                    fill
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
                     onError={() => setFailedImages(prev => new Set([...prev, `${img.url}-${i}`]))}
                   />
                 )}

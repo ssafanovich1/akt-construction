@@ -2,6 +2,7 @@
 import { Phone, ChevronDown, MapPin, ShieldCheck, ArrowDown } from 'lucide-react'
 import { RevealDiv } from '../lib/useScrollReveal'
 import { COMPANY } from '../lib/constants'
+import Image from 'next/image'
 
 export default function Hero() {
   return (
@@ -12,11 +13,12 @@ export default function Hero() {
     >
       {/* Background Image */}
       <div className="absolute inset-0">
-        <img
+        <Image
           src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1920&q=80"
           alt="Beautiful modern kitchen remodel in Los Angeles home"
-          className="w-full h-full object-cover"
-          loading="eager"
+          fill
+          priority
+          className="object-cover"
         />
         <div className="hero-overlay absolute inset-0" />
       </div>

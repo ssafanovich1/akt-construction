@@ -2,6 +2,7 @@
 import { Phone } from 'lucide-react'
 import { RevealDiv } from '../lib/useScrollReveal'
 import { COMPANY } from '../lib/constants'
+import Image from 'next/image'
 
 export default function About() {
   return (
@@ -73,11 +74,12 @@ export default function About() {
 
           {/* Image */}
           <RevealDiv className="order-1 lg:order-2">
-            <img
+            <Image
               src="https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=800&q=80"
               alt="Beautiful kitchen remodel by AKT Construction"
+              width={800}
+              height={800}
               className="rounded-2xl shadow-2xl w-full object-cover aspect-square"
-              loading="lazy"
             />
           </RevealDiv>
         </div>
